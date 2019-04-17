@@ -70,3 +70,56 @@ names(managers)[11] <- "Answer total"
 
 # Show 
 str(managers)
+
+new_managers_data <- read.csv("MoreData(1).csv")
+str(new_managers_data)
+
+names(new_managers_data)
+include_list <- new_managers_data[c(6, 3, 7, 4, 8:12)]
+include_list
+
+rbind(managers, include_list)
+
+blank_vectors <- c("Agecat", "Answer total", "mean value")
+include_list[, blank_vectors] <- NA
+include_list
+
+attach(include_list)
+include_list$AgeCat[Age >= 45] <- "Elder"
+include_list$AgeCat[Age >= 26 & Age <= 44] <- "Middle Aged"
+include_list$AgeCat[Age <= 25] <- "Young"
+include_list$AgeCat[is.na(Age)] <- "Elder"
+detach(include_list)
+include_list
+
+attach(include_list)
+include_list$`Answer total` <- Q1 + Q2 + Q3 + Q4 + Q5
+#find mean values
+include_list$`mean value` <- rowMeans(include_list[5:9])
+#Default dateformat in R is yyyy-mm-dd
+#Define position of the date contents first
+#in the imported data frame eg using %d,%m etc
+#R then puts the date field into yyyy-mm-dd
+#format when using the date type
+
+restructed.date <- as.Date(include_list$Date, "%m%d%Y")
+restructured_date
+include_list$Date <- restructed.date
+
+#Restructure the managers date field
+managers_restructured_date <- as.Date(managers$Date, "%Y-%d-%m")
+managers_restructured_date
+
+#Assign restructured date to the managers data frame
+managers$Date <- managers_restructured_date
+
+str(managers)
+str(include_list)
+#combine both datasets with the rbind() function
+new_managers_dataframe <- rbind(managers, include_list)
+str(new_managers_dataframe)
+head(new_managers_dataframe, 10)
+
+#Set AgeCat with ordered factors
+new_managers_dataframe$AgeCat <- factor(new_managers_dataframe$Agecat, levels =c("Young", "Middle Aged", "Elder"),ordered = TRUE)
+
